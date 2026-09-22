@@ -7,8 +7,6 @@ target/
 *.zip
 *.tar.gz
 *.rar
-bin/
-git/
 
 # Fichiers de log
 *.log
