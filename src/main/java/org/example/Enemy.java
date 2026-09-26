@@ -2,6 +2,8 @@ package org.example;
 
 public non-sealed class Enemy implements GameEntity{
 
+
+
     @Override
     public PolarPosition getPosition() {
         return null;

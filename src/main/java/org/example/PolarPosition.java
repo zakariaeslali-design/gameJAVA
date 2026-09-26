@@ -1,6 +1,12 @@
 package org.example;
 
 public record PolarPosition(double rayon, double angle) {
+	public double getAngle(){
+		return angle;
+	}
+	public double getRayon(){
+		return rayon;
+	}
 	public double toCartesianX() {
 		return rayon*Math.cos(angle);
 	}
