@@ -1,6 +1,6 @@
 package org.example;
 
-public non-sealed class Player implements GameEntity {
+public final class Player implements GameEntity {
     private static final double RADIUS_ORBIT = 100.0;
 
 
