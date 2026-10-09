@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** tick() sera ajouté par Wassim). */
 
 public class GameEngine {
 
@@ -37,5 +36,15 @@ public class GameEngine {
 
     public void setGameOver(boolean gameOver) {
         this.gameOver = gameOver;
+    }
+    
+    public void tick(double delta) {
+        if (gameOver) {
+            return;
+        }
+
+        for (GameEntity entity : entities) {
+            entity.update();
+        }
     }
 }
