@@ -24,21 +24,16 @@ public class Main {
         System.out.println("=== Orbital Defense - test console sprint 1 ===");
         printStateConsole(engine);
 
-        for (int tick = 1; tick <= 8; tick++) {
-            tickTemporaire(engine);
+        for (int i = 1; i <= 8; i++) {
+            engine.tick(0.1);
             printStateConsole(engine);
         }
 
         System.out.println("=== Fin du test ===");
     }
 
-    // TODO : remplacer par engine.tick(...) quand Wassim aura mergé son travail
-    private static void tickTemporaire(GameEngine engine) {
-        for (GameEntity entity : engine.getEntities()) {
-            entity.update();
-            printStateConsole(engine);
-        }
-    }
+
+   
 
     // Affiche l'état courant du jeu en texte lisible dans la console
     static void printStateConsole(GameEngine engine) {
@@ -48,7 +43,7 @@ public class Main {
         StringBuilder sb = new StringBuilder();
         sb.append("=== État du jeu ===\n");
         sb.append(String.format("Position joueur : angle=%.2f, rayon=%.2f%n",
-                pos.angle(), pos.rayon()));
+                pos.getAngle(), pos.getRayon()));
         sb.append("Vies : ").append(player.getHealth()).append("\n");
         sb.append("Entités actives : ").append(engine.getEntities().size()).append("\n");
         sb.append("Game over : ").append(engine.isGameOver()).append("\n");
