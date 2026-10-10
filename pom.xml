@@ -37,6 +37,23 @@
                     </archive>
                 </configuration>
             </plugin>
+
+            <!-- Ajout : lance les tests JUnit 5 (le surefire par défaut, 2.17, ne les détecte pas) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+            </plugin>
+
+            <!-- Ajout : permet de lancer le jeu graphique avec "mvn javafx:run" -->
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>org.example.GameApp</mainClass>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
