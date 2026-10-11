@@ -47,4 +47,19 @@ public class GameEngine {
             entity.update();
         }
     }
+    
+     // Crée un projectile à la position du joueur, qui partira vers le centre.
+    public void playerShoot() {
+        if (gameOver) {
+            return;
+        }
+
+        PolarPosition playerPos = player.getPosition();
+        Projectile projectile = new Projectile(
+                playerPos.rayon(),
+                playerPos.angle(),
+                15.0); // vitesse du projectile, même valeur que le test sprint 1
+
+        entities.add(projectile);
+    }
 }
