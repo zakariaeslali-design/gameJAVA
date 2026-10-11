@@ -23,4 +23,9 @@ public class GameController {
     public void moveRight() {
         engine.getPlayer().move(ROTATION_STEP);
     }
+    
+    // Déclenche un tir du joueur
+    public void shoot() {
+        engine.playerShoot();
+    }
 }
