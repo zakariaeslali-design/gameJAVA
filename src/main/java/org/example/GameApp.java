@@ -33,6 +33,11 @@ public class GameApp extends Application {
         // La vue graphique d'Amine sert de contenu à la fenêtre
         view = new GraphicalView();
         Scene scene = new Scene(view, 800, 800);
+
+        GameController controller = new GameController(engine);
+        KeyboardInputHandler inputHandler = new KeyboardInputHandler(controller);
+        scene.setOnKeyPressed(inputHandler);
+        
         stage.setTitle("Orbit Invasion");
         stage.setScene(scene);
         stage.show();
