@@ -13,4 +13,14 @@ public class GameController {
     public GameController(GameEngine engine) {
         this.engine = engine;
     }
+    
+    // Fait tourner le joueur vers la gauche (angle négatif)
+    public void moveLeft() {
+        engine.getPlayer().move(-ROTATION_STEP);
+    }
+
+    // Fait tourner le joueur vers la droite (angle positif)
+    public void moveRight() {
+        engine.getPlayer().move(ROTATION_STEP);
+    }
 }
