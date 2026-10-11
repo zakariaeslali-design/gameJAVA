@@ -21,15 +21,11 @@ public class GameApp extends Application {
         Player player = new Player(0.0, 3);
         engine = new GameEngine(player);
 
-        // TEMPORAIRE : un ennemi et un projectile pour voir quelque chose bouger.
-        // À supprimer quand spawnEnemy() et playerShoot() existeront.
+        // TEMPORAIRE : un ennemi  pour voir quelque chose bouger.
+        
         player.move(Math.PI / 4);
         engine.addEntity(new Enemy(0.0, player.getPosition().getAngle(), 10.0));
-        engine.addEntity(new Projectile(
-                player.getPosition().getRayon(),
-                player.getPosition().getAngle(),
-                15.0));
-
+       
         // La vue graphique d'Amine sert de contenu à la fenêtre
         view = new GraphicalView();
         Scene scene = new Scene(view, 800, 800);
