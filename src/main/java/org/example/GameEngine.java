@@ -43,6 +43,17 @@ public class GameEngine {
     public int getScore() {
         return score;
     }
+    
+    
+    public void damagePlayer() {
+        if (gameOver) {
+            return;
+        }
+        player.takeDamage();
+        if (!player.isAlive()) {
+            gameOver = true;
+        }
+    }
 
     
     public void addScore(int points) {
