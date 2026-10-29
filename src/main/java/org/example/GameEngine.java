@@ -101,7 +101,7 @@ public class GameEngine {
                 if (d <= COLLISION_THRESHOLD) {
                     projectile.deactivate();
                     enemy.die();
-                    // score++ : à ajouter quand Salah aura créé le score
+                    addScore(1);
                     break;
                 }
             }
