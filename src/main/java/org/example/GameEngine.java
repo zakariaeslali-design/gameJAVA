@@ -6,7 +6,8 @@ import java.util.List;
 
 
 public class GameEngine {
-
+	
+	private int score;
     private final Player player;
     private final List<GameEntity> entities;
     private boolean gameOver;
@@ -37,6 +38,15 @@ public class GameEngine {
 
     public void setGameOver(boolean gameOver) {
         this.gameOver = gameOver;
+    }
+    
+    public int getScore() {
+        return score;
+    }
+
+    
+    public void addScore(int points) {
+        score += points;
     }
     
     public void tick(double delta) {
