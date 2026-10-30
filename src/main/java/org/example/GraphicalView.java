@@ -4,6 +4,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 
 public class GraphicalView extends Pane implements GameView {
     private final Canvas canvas;
@@ -30,8 +32,13 @@ public class GraphicalView extends Pane implements GameView {
 
         gc.setStroke(Color.DARKGRAY);
         gc.setLineWidth(2);
-        double orbitRadius = 100.0;
-        gc.strokeOval(centerX - orbitRadius, centerY - orbitRadius, orbitRadius * 2, orbitRadius * 2);
+        double orbitRadius = Player.ORBIT_RADIUS;
+        gc.strokeOval(
+                centerX - orbitRadius,
+                centerY - orbitRadius,
+                orbitRadius * 2,
+                orbitRadius * 2
+        );
 
         for (GameEntity entity : engine.getEntities()) {
             if (!entity.isAlive()) continue;
@@ -47,6 +54,29 @@ public class GraphicalView extends Pane implements GameView {
                 case Projectile proj -> drawProjectile(gc, x, y);
             }
         }
+
+        drawHud(gc, engine);
+    }
+
+    private void drawHud(GraphicsContext gc, GameEngine engine) {
+        gc.setFill(Color.WHITE);
+        gc.setFont(Font.font("Monospaced", FontWeight.BOLD, 20));
+        gc.fillText(
+                formatHudText(engine.getScore(), engine.getPlayer().getHealth(), engine.isGameOver()),
+                20,
+                35
+        );
+
+        if (engine.isGameOver()) {
+            gc.setFill(Color.RED);
+            gc.setFont(Font.font("Monospaced", FontWeight.BOLD, 40));
+            gc.fillText("GAME OVER", centerX - 110, centerY);
+        }
+    }
+
+    static String formatHudText(int score, int health, boolean gameOver) {
+        String base = String.format("Score : %d | Vies : %d", score, health);
+        return gameOver ? base + " [GAME OVER]" : base;
     }
 
     private void drawPlayer(GraphicsContext gc, double x, double y) {
