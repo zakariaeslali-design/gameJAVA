@@ -20,11 +20,6 @@ public class GameApp extends Application {
         // Même initialisation que dans Main : un joueur et un moteur
         Player player = new Player(0.0, 3);
         engine = new GameEngine(player);
-
-        // TEMPORAIRE : un ennemi  pour voir quelque chose bouger.
-        
-        player.move(Math.PI / 4);
-        engine.addEntity(new Enemy(0.0, player.getPosition().getAngle(), 10.0));
        
         // La vue graphique d'Amine sert de contenu à la fenêtre
         view = new GraphicalView();

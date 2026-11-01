@@ -3,18 +3,29 @@ package org.example;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 
 public class GameEngine {
-	
-	private int score;
+
+    private int score;
     private final Player player;
     private final List<GameEntity> entities;
     private boolean gameOver;
     static final double COLLISION_THRESHOLD = 15.0;
+    static final double ENEMY_SPEED = 10.0;
+    static final double SPAWN_INTERVAL = 2.0;
+
+    private final Random random;
+    private double spawnTimer;
 
     public GameEngine(Player player) {
+        this(player, new Random());
+    }
+
+    public GameEngine(Player player, Random random) {
         this.player = player;
+        this.random = random;
         this.entities = new ArrayList<>();
         this.entities.add(player);
         this.gameOver = false;
@@ -39,12 +50,11 @@ public class GameEngine {
     public void setGameOver(boolean gameOver) {
         this.gameOver = gameOver;
     }
-    
+
     public int getScore() {
         return score;
     }
-    
-    
+
     public void damagePlayer() {
         if (gameOver) {
             return;
@@ -55,11 +65,10 @@ public class GameEngine {
         }
     }
 
-    
     public void addScore(int points) {
         score += points;
     }
-    
+
     public void tick(double delta) {
         if (gameOver) {
             return;
@@ -68,13 +77,20 @@ public class GameEngine {
         for (GameEntity entity : entities) {
             entity.update();
         }
+
+        // Toutes les 2 secondes, un nouvel ennemi apparaît
+        spawnTimer += delta;
+        if (spawnTimer >= SPAWN_INTERVAL) {
+            spawnEnemy(random.nextDouble() * 2 * Math.PI);
+            spawnTimer -= SPAWN_INTERVAL;
+        }
+
         checkCollisions();
-        
+        checkEscapes();
         cleanupEntities();
-        
     }
-    
-     // Crée un projectile à la position du joueur, qui partira vers le centre.
+
+    // Crée un projectile à la position du joueur, qui partira vers le centre.
     public void playerShoot() {
         if (gameOver) {
             return;
@@ -88,6 +104,7 @@ public class GameEngine {
 
         entities.add(projectile);
     }
+
     void checkCollisions() {
         for (GameEntity a : entities) {
             if (!(a instanceof Projectile projectile) || !projectile.isAlive()) {
@@ -107,7 +124,24 @@ public class GameEngine {
             }
         }
     }
-    
+
+    // Crée un ennemi au centre du cercle
+    void spawnEnemy(double angle) {
+        entities.add(new Enemy(0.0, angle, ENEMY_SPEED));
+    }
+
+    // Si un ennemi atteint le bord du cercle : il meurt et le joueur perd une vie
+    void checkEscapes() {
+        for (GameEntity e : entities) {
+            if (e instanceof Enemy enemy
+                    && enemy.isAlive()
+                    && enemy.getPosition().getRayon() >= Player.ORBIT_RADIUS) {
+                enemy.die();
+                damagePlayer();
+            }
+        }
+    }
+
     void cleanupEntities() {
         entities.removeIf(e -> !(e instanceof Player) && !e.isAlive());
     }
