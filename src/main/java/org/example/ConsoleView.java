@@ -13,6 +13,7 @@ public class ConsoleView implements GameView {
         sb.append(String.format("Position joueur : angle=%.2f, rayon=%.2f%n",
                 pos.angle(), pos.rayon()));
         sb.append("Vies : ").append(player.getHealth()).append("\n");
+        sb.append("Score : ").append(engine.getScore()).append("\n");
 
         for (GameEntity entity : engine.getEntities()) {
             if (entity == player) {
