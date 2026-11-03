@@ -26,6 +26,52 @@ Le jeu : le joueur tourne autour d'un cercle (l'orbite) avec les flèches. Des e
 * Commit sur sa branche, relecture rapide par un autre membre, puis merge sur `main`
 
 
+## Sprint 1 : bases du jeu (terminé, pas de graphique, tout en console)
+
+But : avoir un moteur qui marche, même moche, avant de faire joli.
+
+Tâches :
+* **GameEntity** : interface sealed avec les méthodes communes à toutes les entités (`getPosition`, `update`, `isAlive`)
+* **GameEngine (structure)** : la classe qui va tout gérer, pour l'instant juste le squelette (attributs `player`, liste d'`entities`, `gameOver`)
+* **PolarPosition** : record avec `radius` et `angle`, plus les méthodes `toCartesianX()`, `toCartesianY()` et `distanceTo()` pour calculer une distance entre deux positions
+* **Vector2D** : record avec `x` et `y`, pour plus tard quand on aura besoin de vitesses en coordonnées cartésiennes
+* **Player** : classe avec position, `health`, méthode `move(angleDelta)` pour tourner sur le cercle et `takeDamage()`
+* **Enemy** : classe avec position, `speed`, `alive`, méthode `update()` qui le fait avancer vers l'extérieur
+* **Projectile** : classe avec position, `speed`, `active`, méthode `update()` qui avance vers le centre
+* **tick(delta)** : la boucle dans `GameEngine` qui appelle `update()` sur toutes les entités
+* **Main.java** : crée un `GameEngine`, fait tourner la boucle quelques fois, affiche le résultat en console
+* **printStateConsole()** : formatte l'affichage (position, score, vies) en texte lisible
+* **pom.xml** : vérifier la config Maven (JDK 25, dépendance JUnit)
+* **tests PolarPosition** : vérifier `toCartesianX/Y` et `distanceTo` avec des valeurs connues à l'avance
+
+Qui fait quoi :
+* **Zakariae** : PolarPosition + Vector2D + tests sur PolarPosition
+* **Salah** : GameEntity + structure de GameEngine, puis `tick()` + `printStateConsole()` + vérification du pom.xml
+* **Amine** : Player + Enemy
+* **Bilal** : Projectile + Main.java (boucle de test dans Main)
+
+Testeur du sprint : pas de personne dédiée, chacun teste ce qu'il fait (sprint petit).
+
+## Sprint 2 : fenêtre graphique + contrôles (terminé)
+
+But : voir le joueur bouger dans une vraie fenêtre avec les flèches du clavier, et pouvoir tirer.
+
+Tâches :
+* **GameView (interface)** : une méthode `render(engine)` commune
+* **ConsoleView** : garde l'affichage texte du sprint 1 mais propre, comme implémentation de `GameView`
+* **GraphicalView** : fenêtre JavaFX, dessine le cercle et le joueur dessus
+* **GameController** : reçoit les commandes (bouger, tirer) et les envoie au `GameEngine`
+* **KeyboardInputHandler** : capte les flèches gauche/droite + une touche pour tirer, appelle `GameController`
+* **playerShoot()** dans `GameEngine` : crée un `Projectile` à la position du joueur
+* **Dessin des ennemis et projectiles** dans `GraphicalView` (pas juste le joueur)
+* **tests sur Player.move()** : vérifier que l'angle reste bien entre 0 et 2π même après plein de déplacements
+
+Qui fait quoi :
+* **Amine** : GraphicalView (cercle + joueur) et dessin des ennemis/projectiles
+* **Bilal** : KeyboardInputHandler + branchement des touches
+* **Salah** : `playerShoot()` + GameController
+* **Zakariae** : GameView (interface) + ConsoleView propre, et **testeur du sprint** (tests sur `Player.move()` et les angles)
+
 ## Sprint 3 : jeu jouable (collisions, ennemis, score, vies)
 
 But : un jeu où on peut gagner des points et perdre. Pas de nouveautés visuelles encore.
