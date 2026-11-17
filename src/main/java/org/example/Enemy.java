@@ -2,15 +2,18 @@ package org.example;
 
 public final class Enemy implements GameEntity{
     private PolarPosition position;
-    private final double speed;
+    private final MovementStrategy strategy;
     private boolean alive;
 
-    public Enemy(double spawnRadius, double initialAngle, double speed){
+    public Enemy(double spawnRadius, double initialAngle, MovementStrategy strategy) {
         this.position = new PolarPosition(spawnRadius, initialAngle);
-        this.speed = speed;
+        this.strategy = strategy;
         this.alive = true;
     }
 
+    public Enemy(double spawnRadius, double initialAngle, double speed) {
+        this(spawnRadius, initialAngle, new RadialMovement(speed));
+    }
 
     @Override
     public PolarPosition getPosition() {
@@ -23,8 +26,9 @@ public final class Enemy implements GameEntity{
             return;
         }
 
-        double newRadius = position.getRayon() + speed;
-        this.position = new PolarPosition(newRadius, position.getAngle());
+        PolarPosition d = strategy.calculerDeplacement(1.0);
+        position = new PolarPosition(position.getRayon() + d.getRayon(),
+                position.getAngle() + d.getAngle());
     }
 
     @Override
