@@ -115,7 +115,7 @@ public class GameEngine {
                     continue;
                 }
                 double d = projectile.getPosition().distanceTo(enemy.getPosition());
-                if (d <= COLLISION_THRESHOLD) {
+                if (d <= enemy.getCollisionRadius()) {
                     projectile.deactivate();
                     enemy.die();
                     addScore(1);
