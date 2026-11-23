@@ -117,8 +117,10 @@ public class GameEngine {
                 double d = projectile.getPosition().distanceTo(enemy.getPosition());
                 if (d <= COLLISION_THRESHOLD) {
                     projectile.deactivate();
-                    enemy.die();
-                    addScore(1);
+                    enemy.takeDamage();
+                    if (!enemy.isAlive()) {
+                        addScore(enemy.getScorePoints());
+                    }
                     break;
                 }
             }
@@ -127,7 +129,9 @@ public class GameEngine {
 
     // Crée un ennemi au centre du cercle
     void spawnEnemy(double angle) {
-        entities.add(new Enemy(0.0, angle, ENEMY_SPEED));
+        EnemyType[] types = EnemyType.values();
+        EnemyType type = types[random.nextInt(types.length)];
+        entities.add(EnemyFactory.creerEnemy(type, angle));
     }
 
     // Si un ennemi atteint le bord du cercle : il meurt et le joueur perd une vie
