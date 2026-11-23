@@ -50,7 +50,7 @@ public class GraphicalView extends Pane implements GameView {
 
             switch (entity) {
                 case Player p -> drawPlayer(gc, x, y, pos.angle());
-                case Enemy e -> drawEnemy(gc, x, y);
+                case Enemy e -> drawEnemy(gc, x, y, e);
                 case Projectile proj -> drawProjectile(gc, x, y);
             }
         }
@@ -115,13 +115,37 @@ public class GraphicalView extends Pane implements GameView {
         gc.restore();
     }
 
-    private void drawEnemy(GraphicsContext gc, double x, double y) {
-        gc.setFill(Color.RED);
-        gc.fillOval(x - 8, y - 8, 16, 16);
+    private void drawEnemy(GraphicsContext gc, double x, double y, Enemy enemy) {
+        // Le sprite suit le rayon de collision du type : le tank est plus gros
+        double drawSize = 2 * enemy.getCollisionRadius();
+
+        Image sprite = switch (enemy.getType()) {
+            case BASIQUE -> assets.getImage(AssetLoader.ENEMY_BASIQUE_SPRITE);
+            case RAPIDE -> assets.getImage(AssetLoader.ENEMY_RAPIDE_SPRITE);
+            case TANK -> assets.getImage(AssetLoader.ENEMY_TANK_SPRITE);
+        };
+
+        if (sprite == null) {
+            // Forme de secours si l'image manque (ne plante jamais)
+            gc.setFill(Color.RED);
+            gc.fillOval(x - drawSize / 2, y - drawSize / 2, drawSize, drawSize);
+            return;
+        }
+
+        gc.drawImage(sprite, x - drawSize / 2, y - drawSize / 2, drawSize, drawSize);
     }
 
     private void drawProjectile(GraphicsContext gc, double x, double y) {
-        gc.setFill(Color.YELLOW);
-        gc.fillOval(x - 4, y - 4, 8, 8);
+        double drawSize = 14.0;
+        Image sprite = assets.getImage(AssetLoader.PROJECTILE_SPRITE);
+
+        if (sprite == null) {
+            // Forme de secours si l'image manque (ne plante jamais)
+            gc.setFill(Color.YELLOW);
+            gc.fillOval(x - drawSize / 2, y - drawSize / 2, drawSize, drawSize);
+            return;
+        }
+
+        gc.drawImage(sprite, x - drawSize / 2, y - drawSize / 2, drawSize, drawSize);
     }
 }
