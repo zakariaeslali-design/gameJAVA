@@ -6,6 +6,7 @@ import java.util.Map;
 import javafx.scene.image.Image;
 
 public class AssetLoader {
+    public static final String BACKGROUND_IMAGE = "/images/background.png";
     public static final String PLAYER_SPRITE = "/images/player.png";
     public static final String ENEMY_BASIQUE_SPRITE = "/images/enemy_basique.png";
     public static final String ENEMY_RAPIDE_SPRITE = "/images/enemy_rapide.png";
@@ -15,6 +16,7 @@ public class AssetLoader {
     private final Map<String, Image> cache = new HashMap<>();
 
     public AssetLoader() {
+        preload(BACKGROUND_IMAGE);
         preload(PLAYER_SPRITE);
         preload(ENEMY_BASIQUE_SPRITE);
         preload(ENEMY_RAPIDE_SPRITE);
