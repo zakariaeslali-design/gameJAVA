@@ -11,7 +11,7 @@ public final class EnemyFactory {
                     0.0,
                     angle,
                     EnemyType.BASIQUE,
-                    new RadialMovement(10.0),
+                    new RadialMovement(0.6),
                     1,
                     1
             );
@@ -19,7 +19,7 @@ public final class EnemyFactory {
                     0.0,
                     angle,
                     EnemyType.RAPIDE,
-                    new SinuousMovement(14.0, 0.12, 0.6),
+                    new SinuousMovement(0.9, 0.015, 0.08),
                     1,
                     2
             );
@@ -27,7 +27,7 @@ public final class EnemyFactory {
                     0.0,
                     angle,
                     EnemyType.TANK,
-                    new AcceleratedMovement(4.0, 0.5),
+                    new AcceleratedMovement(0.25, 0.002),
                     3,
                     3
             );

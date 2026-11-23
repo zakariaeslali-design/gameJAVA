@@ -21,17 +21,14 @@ public class GraphicalView extends Pane implements GameView {
         this.assets = new AssetLoader();
         this.getChildren().add(canvas);
 
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.setFill(Color.BLACK);
-        gc.fillRect(0, 0, width, height);
+        drawBackground(canvas.getGraphicsContext2D());
     }
 
     @Override
     public void render(GameEngine engine) {
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        gc.setFill(Color.BLACK);
-        gc.fillRect(0, 0, width, height);
+        drawBackground(gc);
 
         gc.setStroke(Color.DARKGRAY);
         gc.setLineWidth(2);
@@ -59,6 +56,23 @@ public class GraphicalView extends Pane implements GameView {
         }
 
         drawHud(gc, engine);
+    }
+
+    private void drawBackground(GraphicsContext gc) {
+        Image background = assets.getImage(AssetLoader.BACKGROUND_IMAGE);
+        if (background == null || background.getWidth() <= 0 || background.getHeight() <= 0) {
+            gc.setFill(Color.BLACK);
+            gc.fillRect(0, 0, width, height);
+            return;
+        }
+
+        double tileWidth = background.getWidth();
+        double tileHeight = background.getHeight();
+        for (double x = 0; x < width; x += tileWidth) {
+            for (double y = 0; y < height; y += tileHeight) {
+                gc.drawImage(background, x, y);
+            }
+        }
     }
 
     private void drawHud(GraphicsContext gc, GameEngine engine) {

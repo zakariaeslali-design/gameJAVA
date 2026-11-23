@@ -14,6 +14,7 @@ public class GameEngine {
     private boolean gameOver;
     static final double COLLISION_THRESHOLD = 15.0;
     static final double ENEMY_SPEED = 10.0;
+    static final double PROJECTILE_SPEED = 5.0;
     static final double SPAWN_INTERVAL = 2.0;
 
     private final Random random;
@@ -100,7 +101,7 @@ public class GameEngine {
         Projectile projectile = new Projectile(
                 playerPos.rayon(),
                 playerPos.angle(),
-                15.0); // vitesse du projectile, même valeur que le test sprint 1
+                PROJECTILE_SPEED);
 
         entities.add(projectile);
     }

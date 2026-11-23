@@ -7,64 +7,55 @@ import javafx.stage.Stage;
 
 public class GameApp extends Application {
 
-    // Intervalle entre deux tick() du moteur, en secondes.
-    // Plus c'est grand, plus le jeu est lent (les entités avancent d'un pas à chaque tick).
-    private static final double TICK_INTERVAL = 0.5;
+    private static final double TARGET_FPS = 60.0;
+    private static final double TICK_INTERVAL = 1.0 / TARGET_FPS;
+    private static final double MAX_FRAME_DELTA = 0.25; // évite un rattrapage excessif si la fenêtre est gelée
 
     private GameEngine engine;
     private GraphicalView view;
 
-    // start() est appelée par JavaFX au lancement : elle crée le jeu et ouvre la fenêtre
     @Override
     public void start(Stage stage) {
-        // Même initialisation que dans Main : un joueur et un moteur
         Player player = new Player(0.0, 3);
         engine = new GameEngine(player);
-       
-        // La vue graphique d'Amine sert de contenu à la fenêtre
+
         view = new GraphicalView();
         Scene scene = new Scene(view, 800, 800);
 
         GameController controller = new GameController(engine);
         KeyboardInputHandler inputHandler = new KeyboardInputHandler(controller);
         scene.setOnKeyPressed(inputHandler);
-        
+
         stage.setTitle("Orbit Invasion");
         stage.setScene(scene);
         stage.show();
 
-        // Boucle de jeu : JavaFX appelle handle() à chaque image (~60 fois par seconde)
         AnimationTimer timer = new AnimationTimer() {
             private long last = 0;
             private double accumulateur = 0;
 
             @Override
             public void handle(long now) {
-                // Première image : on mémorise juste l'heure
                 if (last == 0) {
                     last = now;
                     return;
                 }
 
-                // Temps écoulé depuis l'image précédente (now est en nanosecondes)
-                double delta = (now - last) / 1_000_000_000.0;
+                double delta = Math.min((now - last) / 1_000_000_000.0, MAX_FRAME_DELTA);
                 last = now;
 
-                // On ne fait avancer le moteur que toutes les TICK_INTERVAL secondes
                 accumulateur += delta;
-                if (accumulateur >= TICK_INTERVAL) {
-                    engine.tick(accumulateur);
-                    accumulateur = 0;
+                while (accumulateur >= TICK_INTERVAL) {
+                    engine.tick(TICK_INTERVAL);
+                    accumulateur -= TICK_INTERVAL;
                 }
 
-                // Mais on redessine à chaque images
                 view.render(engine);
             }
         };
         timer.start();
     }
 
-    // Point d'entrée : lance JavaFX, qui appelle ensuite start()
     public static void main(String[] args) {
         launch(args);
     }
