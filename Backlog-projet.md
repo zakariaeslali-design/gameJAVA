@@ -112,16 +112,20 @@ Tâches :
   * dossier `src/main/resources/images/`,
   * classe `AssetLoader` qui charge chaque image **une seule fois** (jamais dans `render()`),
   * sprite du vaisseau joueur, orienté vers le centre,
+  * fond spatial, avec fond noir de secours si l'image manque,
   * un sprite par type d'ennemi, un sprite de projectile,
   * si une image manque, la vue dessine une forme de secours (pour ne pas planter).
 * **Rayon de collision** : un rayon par type d'ennemi (le tank est plus gros).
+* **Fluidité et précision des contrôles** :
+  * passage de la boucle de simulation (`GameApp`) à **60 FPS / 60 ticks par seconde** (`TICK_INTERVAL = 1.0 / 60.0`) avec recalibrage des vitesses des ennemis et projectiles pour 60 Hz,
+  * réduction du pas de rotation du joueur dans `GameController` (`ROTATION_STEP = Math.PI / 36`, soit 5° par appui) pour affiner la visée.
 * **tests** : `EnemyFactory` (chaque type a les bons attributs), les 3 stratégies (valeur attendue pour un delta donné), le tir triple (3 projectiles, angles attendus).
 * **UML** : diagramme de classes du Factory et du Strategy (`EnemyType`, `EnemyFactory`, `MovementStrategy` et ses 3 implémentations).
 * **Revue du sprint 3**.
 
 Qui fait quoi :
 * **Zakariae** : les 3 stratégies de mouvement + leurs tests
-* **Amine** : EnemyType + EnemyFactory, puis AssetLoader + sprite du joueur
+* **Amine** : EnemyType + EnemyFactory, AssetLoader + sprite du joueur + background, passage à 60 FPS (recalibrage des vitesses) et diminution de l'angle de déplacement du joueur
 * **Salah** : sprites des ennemis (un par type) + sprite du projectile + rayons de collision par type
 * **Bilal** : tirs du joueur (simple, triple, changement d'arme) et **testeur du sprint** (tests EnemyFactory, stratégies, tirs) + UML du sprint
 
