@@ -132,7 +132,15 @@ public class GraphicalView extends Pane implements GameView {
             return;
         }
 
-        gc.drawImage(sprite, x - drawSize / 2, y - drawSize / 2, drawSize, drawSize);
+        // Les sprites d'ennemis ont le nez vers le haut (comme le joueur) : on les tourne
+        // pour que le nez pointe vers le centre du jeu, c'est-a-dire dans leur sens de deplacement
+        double rotationDeg = -90.0 - Math.toDegrees(enemy.getPosition().angle());
+
+        gc.save();
+        gc.translate(x, y);
+        gc.rotate(rotationDeg);
+        gc.drawImage(sprite, -drawSize / 2, -drawSize / 2, drawSize, drawSize);
+        gc.restore();
     }
 
     private void drawProjectile(GraphicsContext gc, double x, double y) {
