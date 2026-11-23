@@ -1,6 +1,7 @@
 package org.example;
 
 public final class Enemy implements GameEntity{
+    public static final double DEFAULT_COLLISION_RADIUS = 15.0;
     private PolarPosition position;
     private final MovementStrategy strategy;
     private final double collisionRadius;
@@ -23,6 +24,7 @@ public final class Enemy implements GameEntity{
 
     public double getCollisionRadius() {
         return collisionRadius;
+    }
 
     @Override
     public PolarPosition getPosition() {
