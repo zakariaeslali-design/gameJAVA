@@ -13,8 +13,8 @@ public final class Enemy implements GameEntity {
     private boolean alive;
 
     // Constructeur complet : type, points de vie, points de score et rayon de collision
-    private Enemy(double spawnRadius,
-                  double initialAngle,
+    public Enemy(double spawnRadius,
+                 double initialAngle,
                   EnemyType type,
                   MovementStrategy strategy,
                   int health,
