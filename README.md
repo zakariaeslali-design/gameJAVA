@@ -12,3 +12,6 @@ mvn javafx:run
 mvn compile
 java -cp target/classes org.example.Main
 ```
+## Crédits
+
+Images : pack « Space Shooter Remastered » (licence CC0), https://kenney.nl/assets/space-shooter-remastered
