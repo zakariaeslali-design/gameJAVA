@@ -12,10 +12,13 @@ public class GameEngine {
     private final Player player;
     private final List<GameEntity> entities;
     private boolean gameOver;
+    private WeaponType weapon = WeaponType.SIMPLE;
     static final double COLLISION_THRESHOLD = 15.0;
     static final double ENEMY_SPEED = 10.0;
     static final double PROJECTILE_SPEED = 5.0;
     static final double SPAWN_INTERVAL = 2.0;
+    // Ecart d'angle entre les 3 projectiles du tir triple (15 degres)
+    static final double TRIPLE_SHOT_SPREAD = Math.PI / 12;
 
     private final Random random;
     private double spawnTimer;
@@ -91,19 +94,36 @@ public class GameEngine {
         cleanupEntities();
     }
 
-    // Crée un projectile à la position du joueur, qui partira vers le centre.
+    public WeaponType getWeapon() {
+        return weapon;
+    }
+
+    // Passe a l'arme suivante (SIMPLE -> TRIPLE -> SIMPLE ...)
+    public void switchWeapon() {
+        WeaponType[] weapons = WeaponType.values();
+        weapon = weapons[(weapon.ordinal() + 1) % weapons.length];
+    }
+
+    // Tire avec l'arme choisie : 1 projectile (SIMPLE) ou 3 projectiles (TRIPLE)
     public void playerShoot() {
         if (gameOver) {
             return;
         }
 
         PolarPosition playerPos = player.getPosition();
-        Projectile projectile = new Projectile(
-                playerPos.rayon(),
-                playerPos.angle(),
-                PROJECTILE_SPEED);
+        switch (weapon) {
+            case SIMPLE -> spawnProjectile(playerPos.angle());
+            case TRIPLE -> {
+                spawnProjectile(playerPos.angle() - TRIPLE_SHOT_SPREAD);
+                spawnProjectile(playerPos.angle());
+                spawnProjectile(playerPos.angle() + TRIPLE_SHOT_SPREAD);
+            }
+        }
+    }
 
-        entities.add(projectile);
+    // Cree un projectile qui part de l'orbite du joueur avec l'angle donne
+    private void spawnProjectile(double angle) {
+        entities.add(new Projectile(Player.ORBIT_RADIUS, angle, PROJECTILE_SPEED));
     }
 
     void checkCollisions() {

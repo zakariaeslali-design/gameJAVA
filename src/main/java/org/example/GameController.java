@@ -27,4 +27,9 @@ public class GameController {
     public void shoot() {
         engine.playerShoot();
     }
+
+    // Change d'arme (tir simple / tir triple)
+    public void switchWeapon() {
+        engine.switchWeapon();
+    }
 }

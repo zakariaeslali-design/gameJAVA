@@ -4,7 +4,7 @@ import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 
 
-/* Flèche gauche / droite : tourner. Espace : tirer.*/
+/* Flèche gauche / droite : tourner. Espace : tirer. W : changer d'arme.*/
 
 public class KeyboardInputHandler implements EventHandler<KeyEvent> {
 
@@ -20,6 +20,7 @@ public class KeyboardInputHandler implements EventHandler<KeyEvent> {
             case LEFT -> controller.moveLeft();
             case RIGHT -> controller.moveRight();
             case SPACE -> controller.shoot();
+            case W -> controller.switchWeapon();
             default -> { } 
         }
     }
