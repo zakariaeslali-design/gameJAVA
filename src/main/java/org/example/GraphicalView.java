@@ -84,6 +84,10 @@ public class GraphicalView extends Pane implements GameView {
                 35
         );
 
+        gc.setFill(Color.WHITE);
+        gc.setFont(Font.font("Monospaced", FontWeight.NORMAL, 16));
+        gc.fillText("Arme : " + engine.getWeapon() + " (W pour changer)", 20, 60);
+
         if (engine.isGameOver()) {
             gc.setFill(Color.RED);
             gc.setFont(Font.font("Monospaced", FontWeight.BOLD, 40));
