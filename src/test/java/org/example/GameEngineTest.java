@@ -142,4 +142,59 @@ class GameEngineTest {
         assertEquals("Score : 4 | Vies : 2", GraphicalView.formatHudText(4, 2, false));
         assertEquals("Score : 10 | Vies : 0 [GAME OVER]", GraphicalView.formatHudText(10, 0, true));
     }
+
+    @Test
+    void checkEscapesKillsEnemyAtOrbitAndDamagesPlayer() {
+        Player player = new Player(0.0, 3);
+        GameEngine engine = new GameEngine(player);
+        Enemy escapingEnemy = new Enemy(Player.ORBIT_RADIUS, 0.5, 10.0);
+        engine.addEntity(escapingEnemy);
+
+        engine.checkEscapes();
+
+        assertFalse(escapingEnemy.isAlive(), "L'ennemi ayant atteint l'orbite doit être marqué mort");
+        assertEquals(2, player.getHealth(), "Le joueur doit perdre 1 point de vie");
+        assertFalse(engine.isGameOver());
+    }
+
+    @Test
+    void checkEscapesIgnoresEnemyInsideOrbit() {
+        Player player = new Player(0.0, 3);
+        GameEngine engine = new GameEngine(player);
+        Enemy insideEnemy = new Enemy(Player.ORBIT_RADIUS - 0.1, 0.5, 10.0);
+        engine.addEntity(insideEnemy);
+
+        engine.checkEscapes();
+
+        assertTrue(insideEnemy.isAlive());
+        assertEquals(3, player.getHealth());
+    }
+
+    @Test
+    void escapedEnemyIsRemovedAndTriggersGameOverOnLastLife() {
+        Player player = new Player(0.0, 1);
+        GameEngine engine = new GameEngine(player);
+        // À r = 295 avec speed = 10, le prochain tick l'amène à 305 >= ORBIT_RADIUS (300)
+        Enemy enemyNearBorder = new Enemy(Player.ORBIT_RADIUS - 5.0, 0.0, 10.0);
+        engine.addEntity(enemyNearBorder);
+
+        engine.tick(0.1);
+
+        assertEquals(0, player.getHealth());
+        assertTrue(engine.isGameOver());
+        assertEquals(1, engine.getEntities().size(), "L'ennemi échappé doit être nettoyé de la liste");
+    }
+
+    @Test
+    void tickSpawnsEnemyAtCenterWhenSpawnIntervalReached() {
+        GameEngine engine = new GameEngine(new Player(0.0, 3));
+
+        engine.tick(GameEngine.SPAWN_INTERVAL);
+
+        assertEquals(2, engine.getEntities().size(), "Un ennemi doit apparaître après SPAWN_INTERVAL");
+        GameEntity spawned = engine.getEntities().get(1);
+        assertInstanceOf(Enemy.class, spawned);
+        // L'ennemi apparaît après la boucle update() du tick courant, il est donc encore au centre (r = 0)
+        assertEquals(0.0, spawned.getPosition().rayon(), 1e-9);
+    }
 }

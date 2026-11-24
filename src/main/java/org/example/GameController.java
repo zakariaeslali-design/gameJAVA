@@ -3,17 +3,16 @@ package org.example;
 /**
  * Reçoit les commandes du joueur (bouger, tirer) et les transmet au moteur.
  */
-
 public class GameController {
 
-    private static final double ROTATION_STEP = Math.PI / 16; // pas de rotation par appui
+    private static final double ROTATION_STEP = Math.PI / 36;
 
     private final GameEngine engine;
 
     public GameController(GameEngine engine) {
         this.engine = engine;
     }
-    
+
     // Fait tourner le joueur vers la gauche (angle négatif)
     public void moveLeft() {
         engine.getPlayer().move(-ROTATION_STEP);
@@ -23,9 +22,14 @@ public class GameController {
     public void moveRight() {
         engine.getPlayer().move(ROTATION_STEP);
     }
-    
+
     // Déclenche un tir du joueur
     public void shoot() {
         engine.playerShoot();
+    }
+
+    // Change d'arme (tir simple / tir triple)
+    public void switchWeapon() {
+        engine.switchWeapon();
     }
 }

@@ -2,6 +2,7 @@ package org.example;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -9,6 +10,7 @@ import javafx.scene.text.FontWeight;
 
 public class GraphicalView extends Pane implements GameView {
     private final Canvas canvas;
+    private final AssetLoader assets;
     private final double width = 800;
     private final double height = 800;
     private final double centerX = width / 2;
@@ -16,19 +18,17 @@ public class GraphicalView extends Pane implements GameView {
 
     public GraphicalView() {
         this.canvas = new Canvas(width, height);
+        this.assets = new AssetLoader();
         this.getChildren().add(canvas);
 
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.setFill(Color.BLACK);
-        gc.fillRect(0, 0, width, height);
+        drawBackground(canvas.getGraphicsContext2D());
     }
 
     @Override
     public void render(GameEngine engine) {
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        gc.setFill(Color.BLACK);
-        gc.fillRect(0, 0, width, height);
+        drawBackground(gc);
 
         gc.setStroke(Color.DARKGRAY);
         gc.setLineWidth(2);
@@ -49,13 +49,30 @@ public class GraphicalView extends Pane implements GameView {
             double y = centerY - pos.toCartesianY();
 
             switch (entity) {
-                case Player p -> drawPlayer(gc, x, y);
-                case Enemy e -> drawEnemy(gc, x, y);
+                case Player p -> drawPlayer(gc, x, y, pos.angle());
+                case Enemy e -> drawEnemy(gc, x, y, e);
                 case Projectile proj -> drawProjectile(gc, x, y);
             }
         }
 
         drawHud(gc, engine);
+    }
+
+    private void drawBackground(GraphicsContext gc) {
+        Image background = assets.getImage(AssetLoader.BACKGROUND_IMAGE);
+        if (background == null || background.getWidth() <= 0 || background.getHeight() <= 0) {
+            gc.setFill(Color.BLACK);
+            gc.fillRect(0, 0, width, height);
+            return;
+        }
+
+        double tileWidth = background.getWidth();
+        double tileHeight = background.getHeight();
+        for (double x = 0; x < width; x += tileWidth) {
+            for (double y = 0; y < height; y += tileHeight) {
+                gc.drawImage(background, x, y);
+            }
+        }
     }
 
     private void drawHud(GraphicsContext gc, GameEngine engine) {
@@ -66,6 +83,10 @@ public class GraphicalView extends Pane implements GameView {
                 20,
                 35
         );
+
+        gc.setFill(Color.WHITE);
+        gc.setFont(Font.font("Monospaced", FontWeight.NORMAL, 16));
+        gc.fillText("Arme : " + engine.getWeapon() + " (W pour changer)", 20, 60);
 
         if (engine.isGameOver()) {
             gc.setFill(Color.RED);
@@ -79,18 +100,64 @@ public class GraphicalView extends Pane implements GameView {
         return gameOver ? base + " [GAME OVER]" : base;
     }
 
-    private void drawPlayer(GraphicsContext gc, double x, double y) {
-        gc.setFill(Color.CYAN);
-        gc.fillOval(x - 10, y - 10, 20, 20);
+    private void drawPlayer(GraphicsContext gc, double x, double y, double angleRad) {
+        Image sprite = assets.getImage(AssetLoader.PLAYER_SPRITE);
+        if (sprite == null) {
+            // Forme de secours si l'image manque (ne plante jamais)
+            gc.setFill(Color.CYAN);
+            gc.fillOval(x - 10, y - 10, 20, 20);
+            return;
+        }
+
+        double drawSize = 40.0;
+        double rotationDeg = -Math.toDegrees(angleRad) - 90.0;
+
+        gc.save();
+        gc.translate(x, y);
+        gc.rotate(rotationDeg);
+        gc.drawImage(sprite, -drawSize / 2, -drawSize / 2, drawSize, drawSize);
+        gc.restore();
     }
 
-    private void drawEnemy(GraphicsContext gc, double x, double y) {
-        gc.setFill(Color.RED);
-        gc.fillOval(x - 8, y - 8, 16, 16);
+    private void drawEnemy(GraphicsContext gc, double x, double y, Enemy enemy) {
+        // Le sprite suit le rayon de collision du type : le tank est plus gros
+        double drawSize = 2 * enemy.getCollisionRadius();
+
+        Image sprite = switch (enemy.getType()) {
+            case BASIQUE -> assets.getImage(AssetLoader.ENEMY_BASIQUE_SPRITE);
+            case RAPIDE -> assets.getImage(AssetLoader.ENEMY_RAPIDE_SPRITE);
+            case TANK -> assets.getImage(AssetLoader.ENEMY_TANK_SPRITE);
+        };
+
+        if (sprite == null) {
+            // Forme de secours si l'image manque (ne plante jamais)
+            gc.setFill(Color.RED);
+            gc.fillOval(x - drawSize / 2, y - drawSize / 2, drawSize, drawSize);
+            return;
+        }
+
+        // Les sprites d'ennemis ont le nez vers le haut (comme le joueur) : on les tourne
+        // pour que le nez pointe vers le centre du jeu, c'est-a-dire dans leur sens de deplacement
+        double rotationDeg = -90.0 - Math.toDegrees(enemy.getPosition().angle());
+
+        gc.save();
+        gc.translate(x, y);
+        gc.rotate(rotationDeg);
+        gc.drawImage(sprite, -drawSize / 2, -drawSize / 2, drawSize, drawSize);
+        gc.restore();
     }
 
     private void drawProjectile(GraphicsContext gc, double x, double y) {
-        gc.setFill(Color.YELLOW);
-        gc.fillOval(x - 4, y - 4, 8, 8);
+        double drawSize = 14.0;
+        Image sprite = assets.getImage(AssetLoader.PROJECTILE_SPRITE);
+
+        if (sprite == null) {
+            // Forme de secours si l'image manque (ne plante jamais)
+            gc.setFill(Color.YELLOW);
+            gc.fillOval(x - drawSize / 2, y - drawSize / 2, drawSize, drawSize);
+            return;
+        }
+
+        gc.drawImage(sprite, x - drawSize / 2, y - drawSize / 2, drawSize, drawSize);
     }
 }
