@@ -114,16 +114,22 @@ public class GameEngine {
         switch (weapon) {
             case SIMPLE -> spawnProjectile(playerPos.angle());
             case TRIPLE -> {
-                spawnProjectile(playerPos.angle() - TRIPLE_SHOT_SPREAD);
-                spawnProjectile(playerPos.angle());
-                spawnProjectile(playerPos.angle() + TRIPLE_SHOT_SPREAD);
+                // Les trois tirs partent de la position du joueur ; les deux lateraux
+                // derivent en courbe (angleOffset) puis se rejoignent au centre
+                spawnProjectile(playerPos.angle(), -TRIPLE_SHOT_SPREAD);
+                spawnProjectile(playerPos.angle(), 0.0);
+                spawnProjectile(playerPos.angle(), TRIPLE_SHOT_SPREAD);
             }
         }
     }
 
-    // Cree un projectile qui part de l'orbite du joueur avec l'angle donne
+    // Cree un projectile qui part de la position du joueur avec l'angle donne
     private void spawnProjectile(double angle) {
-        entities.add(new Projectile(Player.ORBIT_RADIUS, angle, PROJECTILE_SPEED));
+        spawnProjectile(angle, 0.0);
+    }
+
+    private void spawnProjectile(double angle, double angleOffset) {
+        entities.add(new Projectile(Player.ORBIT_RADIUS, angle, PROJECTILE_SPEED, angleOffset));
     }
 
     void checkCollisions() {

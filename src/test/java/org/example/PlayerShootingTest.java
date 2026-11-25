@@ -35,7 +35,7 @@ class PlayerShootingTest {
     }
 
     @Test
-    void tirTripleCreeTroisProjectilesAuxBonsAngles() {
+    void lesTroisProjectilesDuTirTripleSortentDeLaPositionDuJoueur() {
         GameEngine engine = new GameEngine(new Player(ANGLE_JOUEUR, 3));
         engine.switchWeapon();
 
@@ -43,12 +43,38 @@ class PlayerShootingTest {
 
         List<Projectile> tirs = projectiles(engine);
         assertEquals(3, tirs.size());
-        assertEquals(ANGLE_JOUEUR - GameEngine.TRIPLE_SHOT_SPREAD, tirs.get(0).getPosition().getAngle(), TOLERANCE);
-        assertEquals(ANGLE_JOUEUR, tirs.get(1).getPosition().getAngle(), TOLERANCE);
-        assertEquals(ANGLE_JOUEUR + GameEngine.TRIPLE_SHOT_SPREAD, tirs.get(2).getPosition().getAngle(), TOLERANCE);
+        // Les trois tirs partent de la position exacte du joueur, pas d'un point decale
         for (Projectile p : tirs) {
+            assertEquals(ANGLE_JOUEUR, p.getPosition().getAngle(), TOLERANCE);
             assertEquals(Player.ORBIT_RADIUS, p.getPosition().getRayon(), TOLERANCE);
             assertTrue(p.isAlive());
+        }
+    }
+
+    @Test
+    void lesTirsLaterauxS_ecartentPuisConvergentAuCentre() {
+        GameEngine engine = new GameEngine(new Player(ANGLE_JOUEUR, 3));
+        engine.switchWeapon();
+        engine.playerShoot();
+
+        List<Projectile> tirs = projectiles(engine);
+        int demiCourse = (int) (Player.ORBIT_RADIUS / 2 / GameEngine.PROJECTILE_SPEED);
+
+        // A mi-course (rayon = ORBIT_RADIUS / 2), l'ecart lateral est maximal
+        for (int i = 0; i < demiCourse; i++) {
+            tirs.forEach(Projectile::update);
+        }
+        assertEquals(ANGLE_JOUEUR - GameEngine.TRIPLE_SHOT_SPREAD, tirs.get(0).getPosition().getAngle(), 1e-6);
+        assertEquals(ANGLE_JOUEUR, tirs.get(1).getPosition().getAngle(), TOLERANCE);
+        assertEquals(ANGLE_JOUEUR + GameEngine.TRIPLE_SHOT_SPREAD, tirs.get(2).getPosition().getAngle(), 1e-6);
+
+        // Au centre, les trois tirs se rejoignent sur l'angle du joueur
+        for (int i = 0; i < demiCourse; i++) {
+            tirs.forEach(Projectile::update);
+        }
+        for (Projectile p : tirs) {
+            assertFalse(p.isAlive());
+            assertEquals(ANGLE_JOUEUR, p.getPosition().getAngle(), 1e-6);
         }
     }
 
@@ -110,8 +136,10 @@ class PlayerShootingTest {
     void leTirTripleTueUnEnnemiSurLesCotes() {
         GameEngine engine = new GameEngine(new Player(0.0, 3));
         engine.switchWeapon();
-        // Ennemi sur le rayon du projectile de gauche/droite (angle +15 degres), proche de l'orbite
-        Enemy enemy = new Enemy(280.0, GameEngine.TRIPLE_SHOT_SPREAD, 0.0);
+        // Ennemi place sur la trajectoire courbe du projectile lateral, proche de l'orbite
+        double rayonEnnemi = 280.0;
+        double ecart = GameEngine.TRIPLE_SHOT_SPREAD * Math.sin(Math.PI * (1.0 - rayonEnnemi / Player.ORBIT_RADIUS));
+        Enemy enemy = new Enemy(rayonEnnemi, ecart, 0.0);
         engine.addEntity(enemy);
 
         engine.playerShoot();
